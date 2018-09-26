@@ -144,15 +144,11 @@
       var rows = this.rows();
       var pieceFound = false;
       for (var r = 0, c = majorDiagonalColumnIndexAtFirstRow; r < rows.length; r++, c++) {
-        if (r < 0) {
-          r--;
-        } else {
-          if (rows[r][c]) {
-            if (pieceFound) {
-              return true;
-            } else {
-              pieceFound = true;
-            }
+        if (rows[r][c]) {
+          if (pieceFound) {
+            return true;
+          } else {
+            pieceFound = true;
           }
         }
       }
@@ -174,14 +170,28 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-
-
+      var rows = this.rows();
+      var pieceFound = false;
+      for (var r = rows.length - 1, c = minorDiagonalColumnIndexAtFirstRow - rows.length + 1; r >= 0; r--, c++) {
+        if (rows[r][c]) {
+          if (pieceFound) {
+            return true;
+          } else {
+            pieceFound = true;
+          }
+        }
+      }
       return false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      for (var i = 2 - this.rows().length; i < this.rows().length * 2 - 2; i++) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
