@@ -18,8 +18,9 @@
 
 window.findNRooksSolution = function(n) {
   var solution = new Board({n: n});
+
   var nextMove = function(r, c) {
-    // make next move on afterMove
+    // make next move
     solution.rows()[r][c] = 1;
     // checks if choice creates conflict
     if (solution.hasAnyRooksConflicts()) {
@@ -27,6 +28,7 @@ window.findNRooksSolution = function(n) {
       solution.rows()[r][c] = 0;
     } 
   }
+
   // loop through rows
   for (var r = 0; r < n; r++) {
     // loop through columns
@@ -34,6 +36,7 @@ window.findNRooksSolution = function(n) {
       nextMove(r, c);
     }
   }
+
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution.rows();
 };
@@ -42,7 +45,47 @@ window.findNRooksSolution = function(n) {
 // with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0;
+
+  var nextMove = function(r, c, solution) {
+    var solution = solution || new Board({n: n});
+    // make next move
+    solution.rows()[r][c] = 1;
+    // check if choice creates a conflict...
+    if (solution.hasAnyRooksConflicts()) {
+      // if so, revert choice
+      solution.rows()[r][c] = 0;
+    } else {
+      // if not, make nextMove (try children) <- I want to just continue the loops here (which will invoke nextMove)
+      var nextC = c + 1;
+      if (nextC === n) {
+        var nextR = r + 1;
+        if (nextR === n) {
+          solutionCount++;
+        } else {
+          nextC = 0;
+          nextMove(nextR, nextC, solution);
+        }
+      } else {
+        nextMove(r, nextC, solution);
+      }
+      // revert choice to continue trying branches (try siblings)
+      solution.rows()[r][c] = 0;
+    }
+  }
+
+  // loop through rows
+  for (var r = 0; r < n; r++) {
+    // loop through columns
+    for (var c = 0; c < n; c++) {
+      nextMove(r, c);
+    }
+  }
+
+
   
+  
+  
+
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
