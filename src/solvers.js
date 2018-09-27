@@ -11,26 +11,44 @@
 // take a look at solversSpec.js to see what the tests are expecting
 
 
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
+// return a matrix (an array of arrays) representing a single nxn chessboard, with n 
+// rooks placed such that none of them can attack each other
 
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
-
+  var solution = new Board({n: n});
+  var nextMove = function(r, c) {
+    // make next move on afterMove
+    solution.rows()[r][c] = 1;
+    // checks if choice creates conflict
+    if (solution.hasAnyRooksConflicts()) {
+      // revert choice if conflict is created
+      solution.rows()[r][c] = 0;
+    } 
+  }
+  // loop through rows
+  for (var r = 0; r < n; r++) {
+    // loop through columns
+    for (var c = 0; c < n; c++) {
+      nextMove(r, c);
+    }
+  }
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  return solution.rows();
 };
 
-// return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+// return the number of nxn chessboards that exist, 
+// with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
-
+  var solutionCount = 0;
+  
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
+// return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of
+// them can attack each other
 window.findNQueensSolution = function(n) {
   var solution = undefined; //fixme
 
