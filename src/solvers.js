@@ -47,47 +47,89 @@ window.countNRooksSolutions = function(n) {
   var solutionCount = 0;
 
   var nextMove = function(r, c, solution) {
+    debugger
+    var solutionCount = 0;
+    
+    
     var solution = solution || new Board({n: n});
-    // make next move
-    solution.rows()[r][c] = 1;
-    // check if choice creates a conflict...
-    if (solution.hasAnyRooksConflicts()) {
-      // if so, revert choice
-      solution.rows()[r][c] = 0;
-    } else {
-      // if not, make nextMove (try children) <- I want to just continue the loops here (which will invoke nextMove)
-      var nextC = c + 1;
-      if (nextC === n) {
-        var nextR = r + 1;
-        if (nextR === n) {
-          solutionCount++;
-        } else {
-          nextC = 0;
-          nextMove(nextR, nextC, solution);
+
+    
+
+    // loop through rows
+    for (var r = r || 0; r < n; r++) {
+      if (c === n) {
+        c = 0;
+        r++;
+        if (r >= n) {
+          return solutionCount;
         }
-      } else {
-        nextMove(r, nextC, solution);
       }
-      // revert choice to continue trying branches (try siblings)
-      solution.rows()[r][c] = 0;
+      // loop through columns
+      for (var c = c || 0; c < n; c++) {
+
+        // make move
+        solution.rows()[r][c] = 1;
+
+        // if there is NOT a conflict...
+        if (!solution.hasAnyRooksConflicts()) {
+          // if at end of grid...
+          if (c === n - 1 && r === n - 1) {
+            solutionCount++;
+          }
+          // try children
+          solutionCount += nextMove(r, c + 1, solution);       //come back here   //could add depthCount
+        }
+        // if conflict, revert move to continue trying branches (try siblings)
+        solution.rows()[r][c] = 0;
+      }
     }
+    return solutionCount;
   }
+  solutionCount += nextMove();
 
-  // loop through rows
-  for (var r = 0; r < n; r++) {
-    // loop through columns
-    for (var c = 0; c < n; c++) {
-      nextMove(r, c);
-    }
-  }
-
-
-  
-  
-  
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
+
+
+
+
+
+
+// window.countNRooksSolutions = function(n) {
+//   var solutionCount = 0;
+
+//   var nextMove = function(r, c, solution) {
+//     var solution = solution || new Board({n: n});
+//     // make next move
+//     solution.rows()[r][c] = 1;
+//     // check if choice creates a conflict...
+//     if (!solution.hasAnyRooksConflicts()) {
+//       // if not, make nextMove (try children) <- I want to just continue the loops here (which will invoke nextMove)
+//       var nextC = c + 1;
+//       if (nextC === n) {
+//         var nextR = r + 1;
+//         if (nextR === n) {
+//           solutionCount++;
+//         } else {
+//           nextC = 0;
+//           nextMove(nextR, nextC, solution);
+//         }
+//       } else {
+//         nextMove(r, nextC, solution);
+//       }
+//     }
+//     // revert choice to continue trying branches (try siblings)
+//     solution.rows()[r][c] = 0;
+//   }
+
+//   // loop through rows
+//   for (var r = 0; r < n; r++) {
+//     // loop through columns
+//     for (var c = 0; c < n; c++) {
+//       nextMove(r, c);
+//     }
+//   }
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of
