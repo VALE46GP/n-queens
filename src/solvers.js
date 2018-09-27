@@ -27,7 +27,7 @@ window.findNRooksSolution = function(n) {
       // revert choice if conflict is created
       solution.rows()[r][c] = 0;
     } 
-  }
+  };
 
   // loop through rows
   for (var r = 0; r < n; r++) {
@@ -46,45 +46,47 @@ window.findNRooksSolution = function(n) {
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0;
 
-  var nextMove = function(r, c, solution) {
-    debugger
+  var nextMove = (r = 0, c = 0, solution = new Board({n: n}), rookCount = 0) => {
+    //debugger
     var solutionCount = 0;
+    var rows = solution.rows();
     
-    
-    var solution = solution || new Board({n: n});
-
-    
-
     // loop through rows
-    for (var r = r || 0; r < n; r++) {
-      if (c === n) {
-        c = 0;
-        r++;
-        if (r >= n) {
-          return solutionCount;
-        }
-      }
-      // loop through columns
-      for (var c = c || 0; c < n; c++) {
+    for (; r < n; r++) {
 
+      // loop through columns
+      for (; c < n; c++) {
         // make move
-        solution.rows()[r][c] = 1;
+        rows[r][c] = 1;
+        rookCount++;
 
         // if there is NOT a conflict...
         if (!solution.hasAnyRooksConflicts()) {
+          if (rookCount === n) {
+            return solutionCount + 1;
+          }
           // if at end of grid...
-          if (c === n - 1 && r === n - 1) {
-            solutionCount++;
+          if (r === n - 1 && c === n - 1) {
+            return solutionCount;
           }
           // try children
-          solutionCount += nextMove(r, c + 1, solution);       //come back here   //could add depthCount
+          solutionCount += nextMove(r, c + 1, solution, rookCount); //come back here   //could add depthCount
         }
         // if conflict, revert move to continue trying branches (try siblings)
-        solution.rows()[r][c] = 0;
+        rows[r][c] = 0;
+        rookCount--;
       }
+      // if at end of grid...
+      if (r === n - 1 && c === n - 1) {
+        return solutionCount;
+      }
+      c = 0;
     }
     return solutionCount;
-  }
+    // if (rookCount === n) {
+    //   return solutionCount + 1;
+    // }
+  };
   solutionCount += nextMove();
 
 
@@ -99,37 +101,54 @@ window.countNRooksSolutions = function(n) {
 // window.countNRooksSolutions = function(n) {
 //   var solutionCount = 0;
 
-//   var nextMove = function(r, c, solution) {
-//     var solution = solution || new Board({n: n});
-//     // make next move
-//     solution.rows()[r][c] = 1;
-//     // check if choice creates a conflict...
-//     if (!solution.hasAnyRooksConflicts()) {
-//       // if not, make nextMove (try children) <- I want to just continue the loops here (which will invoke nextMove)
-//       var nextC = c + 1;
-//       if (nextC === n) {
-//         var nextR = r + 1;
-//         if (nextR === n) {
-//           solutionCount++;
-//         } else {
-//           nextC = 0;
-//           nextMove(nextR, nextC, solution);
+//   var nextMove = (r = 0, c = 0, solution = new Board({n: n}), rookCount = 0) => {
+//     //debugger
+//     var solutionCount = 0;
+//     var rows = solution.rows();
+    
+//     // loop through rows
+//     for (; r < n; r++) {
+
+//       // check if at end of board
+//       if (c === n) {
+//         c = 0;
+//         r++;
+//         if (r >= n) {
+//           if (rookCount === n) {
+//             solutionCount++;
+//           }
+//           return solutionCount;
 //         }
-//       } else {
-//         nextMove(r, nextC, solution);
+//       }
+
+//       // loop through columns
+//       for (; c < n; c++) {
+//         // make move
+//         rows[r][c] = 1;
+
+//         // if there is NOT a conflict...
+//         if (!solution.hasAnyRooksConflicts()) {
+//           // // if at end of grid...
+//           // if (c === n - 1 && r === n - 1 && rookCount === n) {
+//           //   solutionCount++;
+//           // }
+//           // try children
+          
+
+
+//           solutionCount += nextMove(r, c + 1, solution, rookCount + 1); //come back here   //could add depthCount
+//         }
+//         // if conflict, revert move to continue trying branches (try siblings)
+//         rows[r][c] = 0;
 //       }
 //     }
-//     // revert choice to continue trying branches (try siblings)
-//     solution.rows()[r][c] = 0;
-//   }
+//     return solutionCount;
+//   };
+//   solutionCount += nextMove();
 
-//   // loop through rows
-//   for (var r = 0; r < n; r++) {
-//     // loop through columns
-//     for (var c = 0; c < n; c++) {
-//       nextMove(r, c);
-//     }
-//   }
+
+//   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+//   return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of
