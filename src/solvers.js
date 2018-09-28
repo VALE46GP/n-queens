@@ -45,125 +45,140 @@ window.findNRooksSolution = function(n) {
 // with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0;
+  var board = new Board({n: n});
 
-  var nextMove = (r = 0, c = 0, solution = new Board({n: n}), rookCount = 0) => {
-    //debugger
+  if (n === 1) {
+    return 1;
+  }
+
+  var nextMove = (r) => {
     var solutionCount = 0;
-    var rows = solution.rows();
-    
-    // loop through rows
-    for (; r < n; r++) {
-
-      // loop through columns
-      for (; c < n; c++) {
-        // make move
-        rows[r][c] = 1;
-        rookCount++;
-
-        // if there is NOT a conflict...
-        if (!solution.hasAnyRooksConflicts()) {
-          if (rookCount === n) {
-            return solutionCount + 1;
-          }
-          // if at end of grid...
-          if (r === n - 1 && c === n - 1) {
-            return solutionCount;
-          }
-          // try children
-          solutionCount += nextMove(r, c + 1, solution, rookCount); //come back here   //could add depthCount
+    for (var c = 0; c < n; c++) {
+      board.togglePiece(r, c);
+      // if NO conflict...
+      if (!board.hasAnyRooksConflicts()) {
+        // if at end...
+        if (r === n - 1) {
+          board.togglePiece(r, c);
+          return solutionCount + 1;
         }
-        // if conflict, revert move to continue trying branches (try siblings)
-        rows[r][c] = 0;
-        rookCount--;
+        solutionCount += nextMove(r + 1);
+        board.togglePiece(r, c);
+      } else {
+        board.togglePiece(r, c);
       }
-      // if at end of grid...
-      if (r === n - 1 && c === n - 1) {
-        return solutionCount;
-      }
-      c = 0;
     }
     return solutionCount;
-    // if (rookCount === n) {
-    //   return solutionCount + 1;
-    // }
   };
-  solutionCount += nextMove();
 
+  solutionCount += nextMove(0);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
-
-
-
-
-
-
-// window.countNRooksSolutions = function(n) {
-//   var solutionCount = 0;
-
-//   var nextMove = (r = 0, c = 0, solution = new Board({n: n}), rookCount = 0) => {
-//     //debugger
-//     var solutionCount = 0;
-//     var rows = solution.rows();
-    
-//     // loop through rows
-//     for (; r < n; r++) {
-
-//       // check if at end of board
-//       if (c === n) {
-//         c = 0;
-//         r++;
-//         if (r >= n) {
-//           if (rookCount === n) {
-//             solutionCount++;
-//           }
-//           return solutionCount;
-//         }
-//       }
-
-//       // loop through columns
-//       for (; c < n; c++) {
-//         // make move
-//         rows[r][c] = 1;
-
-//         // if there is NOT a conflict...
-//         if (!solution.hasAnyRooksConflicts()) {
-//           // // if at end of grid...
-//           // if (c === n - 1 && r === n - 1 && rookCount === n) {
-//           //   solutionCount++;
-//           // }
-//           // try children
-          
-
-
-//           solutionCount += nextMove(r, c + 1, solution, rookCount + 1); //come back here   //could add depthCount
-//         }
-//         // if conflict, revert move to continue trying branches (try siblings)
-//         rows[r][c] = 0;
-//       }
-//     }
-//     return solutionCount;
-//   };
-//   solutionCount += nextMove();
-
-
-//   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-//   return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of
 // them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var board = new Board({n: n});
+  var solutionCount = 0;
+  var queens = 0;
+  var starterC = 0;
+  if (n === 0) {
+    return [];
+  } else if (n === 1) {
+    return [[1]];
+  }
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  var nextMove = (r) => {
+    var solutionCount = 0;
+    for (var c = 0; c < n; c++) {
+      // TOGGLE
+      if (board.rows(r, c) === 0) {
+        queens++;
+      } else {
+        queens--;
+      }
+      board.togglePiece(r, c);
+
+      // if NO conflict...
+      if (!board.hasAnyQueensConflicts()) {
+        // if at end...
+        if (r === n - 1) {
+          if (queens = n) {
+            return board.rows();
+          }
+          // TOGGLE
+          if (board.rows(r, c) === 0) {
+            queens++;
+          } else {
+            queens--;
+          }
+          board.togglePiece(r, c);
+          return solutionCount + 1;
+        }
+        solutionCount += nextMove(r + 1);
+        // TOGGLE
+        if (board.rows(r, c) === 0) {
+          queens++;
+        } else {
+          queens--;
+        }
+        board.togglePiece(r, c);
+      } else {
+        // TOGGLE
+        if (board.rows(r, c) === 0) {
+          queens++;
+        } else {
+          queens--;
+        }
+        board.togglePiece(r, c);
+      }
+    }
+    return solutionCount;
+  };
+
+
+  
+  
+
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
+  return nextMove(0);
 };
+
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+  var board = new Board({n: n});
 
+  if (n === 0 || n === 1) {
+    return 1;
+  } else if (n === 2 || n === 3) {
+    return 0;
+  }
+
+  var nextMove = (r) => {
+    var solutionCount = 0;
+    for (var c = 0; c < n; c++) {
+      board.togglePiece(r, c);
+      // if NO conflict...
+      if (!board.hasAnyQueensConflicts()) {
+        // if at end...
+        if (r === n - 1) {
+          board.togglePiece(r, c);
+          return solutionCount + 1;
+        }
+        solutionCount += nextMove(r + 1);
+        board.togglePiece(r, c);
+      } else {
+        board.togglePiece(r, c);
+      }
+    }
+    return solutionCount;
+  };
+
+  solutionCount += nextMove(0);
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
